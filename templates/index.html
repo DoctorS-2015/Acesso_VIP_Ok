@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Festa VIP Da Janja 💃</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      text-align: center;
+      padding-top: 50px;
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #000000;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("{{ url_for('static', filename='images/wal2.png') }}");
+      background-size: cover;
+      background-position: center;
+      opacity: 0.4;
+      z-index: -1;
+    }
+    h2 {
+      font-family: 'Lobster';
+      color: #8b0000; /* vinho, por exemplo */
+    }
+
+    input:focus {
+  border-color: #ff0000 !important; /* cor da borda */
+  box-shadow: 0 0 3px rgba(197, 9, 9, 0.485) !important; /* sombra laranja */
+}
+  </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">Festa VIP da Janja - Controle de Acesso: </a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/">Entrada</a></li>
+        <li class="nav-item"><a class="nav-link" href="/relatorio">Relatório</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <form method="POST" class="card p-4 shadow-sm d-flex flex-column gap-3">
+        <div id="etapa-nome">
+          <label class="form-label"><b>Nome:</b></label>
+          <input type="text" name="nome" class="form-control" required>
+          <button type="button" class="btn btn-custom mt-3" onclick="verificarNome()"><i class="bi bi-arrow-right-circle"></i> Continuar</button>
+        </div>
+        <div id="etapa-ingresso" class="d-none">
+          <label class="form-label"><b>Ingresso:</b></label>
+          <input type="text" name="ingresso" class="form-control">
+          <button type="button" class="btn btn-custom mt-3" onclick="mostrarProximaEtapa('etapa-cpf')"><i class="bi bi-arrow-right-circle"></i> Continuar</button>
+        </div>
+        <div id="etapa-cpf" class="d-none">
+          <label class="form-label"><b>CPF:</b></label>
+          <input type="text" name="cpf" class="form-control">
+          <button type="submit" class="btn btn-custom mt-3" onclick="mostrarCarregando()"><i class="bi bi-person-check"></i> Verificar</button>
+        </div>
+        <div id="carregando" class="d-none mt-3">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p>Aguarde, verificando...</p>
+        </div>
+      </form>
+
+      {% if acesso is not none %}
+      <div class="alert mt-4 {% if acesso %}alert-success{% else %}alert-danger{% endif %} col-md-6 mx-auto text-center p-2">
+        <i class="bi {% if acesso %}bi-check-circle-fill{% else %}bi-x-circle-fill{% endif %}"></i>
+        <span>{{ mensagem }}</span>
+      </div>
+      <script>
+        new bootstrap.Modal(document.getElementById('resultadoModal')).show();
+      </script>
+      {% endif %}
+
+      {% if logica %}
+      <button class="btn btn-outline-danger btn-sm mt-3" onclick="toggleLogica()">Ver lógica</button>
+      <div id="logica-detalhes" class="text-muted d-none"><em>{{ logica }}</em></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<a href="/relatorio" class="btn btn-relatorios"><i class="bi bi-table"></i> Ver relatório</a>
+
+<script>
+function mostrarProximaEtapa(id) {
+  document.querySelectorAll('.d-none').forEach(e => e.classList.add('d-none'));
+  document.getElementById(id).classList.remove('d-none');
+}
+function mostrarCarregando() {
+  document.getElementById('carregando').classList.remove('d-none');
+}
+function toggleLogica() {
+  const div = document.getElementById('logica-detalhes');
+  div.classList.toggle('d-none');
+}
+const listaVIP = ["Jair Messias Bolsonaro", "Luiz Inácio Lula Da Silva", "Lula", "Carlos Bolsonaro", "Emmanuel Macron", "Bolsonaro"];
+
+function verificarNome() {
+  const nomeDigitado = document.querySelector('input[name="nome"]').value.trim().toLowerCase();
+  const normalizar = str => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const nomeNormalizado = normalizar(nomeDigitado);
+
+  const estaNaLista = listaVIP.some(nome => normalizar(nome) === nomeNormalizado);
+
+  if (estaNaLista) {
+    mostrarProximaEtapa('etapa-cpf'); // pula direto para CPF
+  } else {
+    mostrarProximaEtapa('etapa-ingresso'); // segue fluxo normal
+  }
+}
+</script>
+</body>
+</html>
