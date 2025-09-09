@@ -2,22 +2,15 @@
 🔧 Etapa 1: Instalar o Flask
 Abra o CMD dentro da pasta do seu projeto e digite:
 
-bash
-Copiar
-Editar
 pip install flask
 Se der erro com pip, tente:
 
-bash
-Copiar
-Editar
+
 python -m pip install flask
 🧪 Verificar se foi instalado corretamente:
 Depois de instalar, você pode checar com:
 
-bash
-Copiar
-Editar
+
 pip show flask
 Se aparecer uma lista com Name: Flask, está tudo ok.
 
@@ -26,45 +19,37 @@ Assim você separa dependências do seu projeto.
 
 No CMD dentro da pasta do projeto, digite:
 
-bash
-Copiar
-Editar
+
 python -m venv venv
+
 Depois ative:
 
 No Windows:
 
-bash
-Copiar
-Editar
 venv\Scripts\activate
 No Linux/macOS:
 
-bash
-Copiar
-Editar
+systemctl start mysql -- systemctl start mariadb.service
+
+systemctl enable mariadb 
+
+systemctl status mariadb.service
+
 source venv/bin/activate
 Depois de ativado, instale o Flask dentro do ambiente virtual:
 
-bash
-Copiar
-Editar
+
 pip install flask
 🚀 Etapa 3: Rodar o sistema
 Com tudo instalado e o app.py configurado, digite:
 
-bash
-Copiar
-Editar
+
 python app.py
 Você verá algo como:
 
 csharp
-Copiar
-Editar
+
  * Running on http://127.0.0.1:5000/
 📲 Agora é só abrir o navegador e acessar:
-cpp
-Copiar
-Editar
+
 http://127.0.0.1:5000/

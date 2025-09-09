@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Controle</title>
+</head>
+<body>
+    <h1>Painel de Controle - Eventos</h1>
+
+    <p><a href="{{ url_for('criar_evento') }}">➕ Criar novo evento</a></p>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>Nome</th>
+            <th>Data Início</th>
+            <th>Data Fim</th>
+            <th>Local</th>
+            <th>Ações</th>
+        </tr>
+        {% for evento in eventos %}
+        <tr>
+            <td><a href="{{ url_for('relatorio_evento', evento_id=evento.id) }}">{{ evento.nome }}</a></td>
+            <td>{{ evento.data_inicio.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ evento.data_fim.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ evento.local }}</td>
+            <td>
+                <form action="{{ url_for('apagar_evento', evento_id=evento.id) }}" method="post" style="display:inline;">
+                    <button type="submit">🗑️ Apagar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p><a href="{{ url_for('logout') }}">Sair</a></p>
+</body>
+</html>

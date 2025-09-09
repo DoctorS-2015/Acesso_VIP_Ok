@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Evento</title>
+</head>
+<body>
+    <h1>Criar novo evento</h1>
+
+    <form method="POST">
+        <label>Nome do evento:</label><br>
+        <input type="text" name="nome" required><br><br>
+
+        <label>Data início:</label><br>
+        <input type="datetime-local" name="data_inicio" required><br><br>
+
+        <label>Data fim:</label><br>
+        <input type="datetime-local" name="data_fim" required><br><br>
+
+        <label>Local:</label><br>
+        <input type="text" name="local"><br><br>
+
+        <label>Descrição:</label><br>
+        <textarea name="descricao"></textarea><br><br>
+
+        <button type="submit">Salvar</button>
+    </form>
+
+    <p><a href="{{ url_for('controle') }}">Voltar</a></p>
+</body>
+</html>
