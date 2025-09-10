@@ -1,0 +1,55 @@
+✅ Solução passo a passo para rodar seu projeto
+🔧 Etapa 1: Instalar o Flask
+Abra o CMD dentro da pasta do seu projeto e digite:
+
+pip install flask
+Se der erro com pip, tente:
+
+
+python -m pip install flask
+🧪 Verificar se foi instalado corretamente:
+Depois de instalar, você pode checar com:
+
+
+pip show flask
+Se aparecer uma lista com Name: Flask, está tudo ok.
+
+🔧 Etapa 2 (opcional mas recomendada): Criar ambiente virtual
+Assim você separa dependências do seu projeto.
+
+No CMD dentro da pasta do projeto, digite:
+
+
+python -m venv venv
+
+Depois ative:
+
+No Windows:
+
+venv\Scripts\activate
+No Linux/macOS:
+
+systemctl start mysql -- systemctl start mariadb.service
+
+systemctl enable mariadb 
+
+systemctl status mariadb.service
+
+source venv/bin/activate
+Depois de ativado, instale o Flask dentro do ambiente virtual:
+
+
+pip install flask
+🚀 Etapa 3: Rodar o sistema
+Com tudo instalado e o app.py configurado, digite:
+
+
+python app.py
+Você verá algo como:
+
+csharp
+
+ * Running on http://127.0.0.1:5000/
+📲 Agora é só abrir o navegador e acessar:
+
+http://127.0.0.1:5000/

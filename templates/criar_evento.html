@@ -2,30 +2,381 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Criar Evento</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Novo Evento</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .input-focus:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .form-section:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            font-weight: 600;
+            margin-right: 1rem;
+            position: relative;
+        }
+        
+        .step.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .step.completed {
+            background: #10b981;
+            color: white;
+        }
+        
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 3rem;
+            height: 2px;
+            background: #e5e7eb;
+            transform: translateY(-50%);
+        }
+        
+        .step:last-child::after {
+            display: none;
+        }
+        
+        .step.completed::after {
+            background: #10b981;
+        }
+    </style>
 </head>
-<body>
-    <h1>Criar novo evento</h1>
+<body class="min-h-screen">
+    <!-- Header -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-plus-circle text-indigo-600 text-2xl mr-3"></i>
+                    <h1 class="text-xl font-semibold text-gray-800">Criar Novo Evento</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('controle') }}" class="text-gray-600 hover:text-indigo-600 transition-colors duration-200 flex items-center">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Voltar ao Painel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-    <form method="POST">
-        <label>Nome do evento:</label><br>
-        <input type="text" name="nome" required><br><br>
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Section -->
+        <div class="text-center mb-8 fade-in">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Criar Novo Evento</h2>
+            <p class="text-gray-600">Preencha as informações abaixo para criar seu evento</p>
+        </div>
 
-        <label>Data início:</label><br>
-        <input type="datetime-local" name="data_inicio" required><br><br>
+        <!-- Progress Steps -->
+        <div class="step-indicator fade-in">
+            <div class="step active">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="step">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="step">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="step">
+                <i class="fas fa-check"></i>
+            </div>
+        </div>
 
-        <label>Data fim:</label><br>
-        <input type="datetime-local" name="data_fim" required><br><br>
+        <!-- Form -->
+        <div class="form-section p-8 fade-in">
+            <form method="POST" id="eventForm" class="space-y-8">
+                <!-- Basic Information Section -->
+                <div class="space-y-6">
+                    <div class="border-b border-gray-200 pb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-info-circle text-indigo-600 mr-2"></i>
+                            Informações Básicas
+                        </h3>
+                        <p class="text-gray-600 text-sm mt-1">Defina o nome e descrição do seu evento</p>
+                    </div>
 
-        <label>Local:</label><br>
-        <input type="text" name="local"><br><br>
+                    <!-- Event Name -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">
+                            <i class="fas fa-tag mr-2"></i>Nome do Evento *
+                        </label>
+                        <input 
+                            type="text" 
+                            name="nome" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent input-focus transition-all duration-300" 
+                            placeholder="Ex: Festa de Aniversário, Casamento, Conferência..."
+                            required
+                        >
+                    </div>
 
-        <label>Descrição:</label><br>
-        <textarea name="descricao"></textarea><br><br>
+                    <!-- Event Description -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">
+                            <i class="fas fa-align-left mr-2"></i>Descrição
+                        </label>
+                        <textarea 
+                            name="descricao" 
+                            rows="4"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent input-focus transition-all duration-300 resize-none" 
+                            placeholder="Descreva os detalhes do seu evento..."
+                        ></textarea>
+                    </div>
+                </div>
 
-        <button type="submit">Salvar</button>
-    </form>
+                <!-- Date and Time Section -->
+                <div class="space-y-6">
+                    <div class="border-b border-gray-200 pb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-calendar text-indigo-600 mr-2"></i>
+                            Data e Horário
+                        </h3>
+                        <p class="text-gray-600 text-sm mt-1">Defina quando seu evento acontecerá</p>
+                    </div>
 
-    <p><a href="{{ url_for('controle') }}">Voltar</a></p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Start Date -->
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">
+                                <i class="fas fa-calendar-plus mr-2"></i>Data e Hora de Início *
+                            </label>
+                            <input 
+                                type="datetime-local" 
+                                name="data_inicio" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent input-focus transition-all duration-300" 
+                                required
+                            >
+                        </div>
+
+                        <!-- End Date -->
+                        <div>
+                            <label class="block text-gray-700 text-sm font-medium mb-2">
+                                <i class="fas fa-calendar-times mr-2"></i>Data e Hora de Término *
+                            </label>
+                            <input 
+                                type="datetime-local" 
+                                name="data_fim" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent input-focus transition-all duration-300" 
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Section -->
+                <div class="space-y-6">
+                    <div class="border-b border-gray-200 pb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-map-marker-alt text-indigo-600 mr-2"></i>
+                            Localização
+                        </h3>
+                        <p class="text-gray-600 text-sm mt-1">Onde seu evento acontecerá</p>
+                    </div>
+
+                    <!-- Location -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-medium mb-2">
+                            <i class="fas fa-building mr-2"></i>Local do Evento
+                        </label>
+                        <input 
+                            type="text" 
+                            name="local" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent input-focus transition-all duration-300" 
+                            placeholder="Ex: Salão de Festas, Hotel, Centro de Convenções..."
+                        >
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-6 border-t border-gray-200 space-y-4 sm:space-y-0">
+                    <a href="{{ url_for('controle') }}" class="btn-secondary text-white font-semibold py-3 px-6 rounded-lg inline-flex items-center justify-center">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancelar
+                    </a>
+                    
+                    <button 
+                        type="submit" 
+                        class="btn-primary text-white font-semibold py-3 px-8 rounded-lg inline-flex items-center justify-center"
+                    >
+                        <i class="fas fa-save mr-2"></i>
+                        Criar Evento
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Help Section -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6 fade-in">
+            <div class="flex items-start">
+                <i class="fas fa-info-circle text-blue-600 text-xl mr-3 mt-1"></i>
+                <div>
+                    <h4 class="text-blue-900 font-semibold mb-2">Dicas para criar um evento</h4>
+                    <ul class="text-blue-800 text-sm space-y-1">
+                        <li>• Use um nome claro e descritivo para o evento</li>
+                        <li>• Certifique-se de que a data de término seja posterior à data de início</li>
+                        <li>• Inclua informações detalhadas na descrição para facilitar o gerenciamento</li>
+                        <li>• O local pode ser editado posteriormente se necessário</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form validation and enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('eventForm');
+            const startDateInput = document.querySelector('input[name="data_inicio"]');
+            const endDateInput = document.querySelector('input[name="data_fim"]');
+
+            // Set minimum date to today
+            const now = new Date();
+            const minDateTime = now.toISOString().slice(0, 16);
+            startDateInput.min = minDateTime;
+            endDateInput.min = minDateTime;
+
+            // Update end date minimum when start date changes
+            startDateInput.addEventListener('change', function() {
+                endDateInput.min = this.value;
+                if (endDateInput.value && endDateInput.value < this.value) {
+                    endDateInput.value = '';
+                }
+            });
+
+            // Form submission with loading state
+            form.addEventListener('submit', function(e) {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalContent = submitBtn.innerHTML;
+                
+                // Validate dates
+                if (startDateInput.value && endDateInput.value) {
+                    if (new Date(endDateInput.value) <= new Date(startDateInput.value)) {
+                        e.preventDefault();
+                        alert('A data de término deve ser posterior à data de início.');
+                        return;
+                    }
+                }
+                
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Criando Evento...';
+                submitBtn.disabled = true;
+                
+                // Re-enable button after 5 seconds in case of error
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.disabled = false;
+                }, 5000);
+            });
+
+            // Auto-resize textarea
+            const textarea = document.querySelector('textarea[name="descricao"]');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+
+            // Progress steps animation (visual only)
+            const steps = document.querySelectorAll('.step');
+            let currentStep = 0;
+
+            function updateSteps() {
+                steps.forEach((step, index) => {
+                    step.classList.remove('active', 'completed');
+                    if (index < currentStep) {
+                        step.classList.add('completed');
+                    } else if (index === currentStep) {
+                        step.classList.add('active');
+                    }
+                });
+            }
+
+            // Simulate progress based on form completion
+            const requiredInputs = form.querySelectorAll('input[required]');
+            requiredInputs.forEach((input, index) => {
+                input.addEventListener('blur', function() {
+                    if (this.value.trim()) {
+                        currentStep = Math.max(currentStep, index + 1);
+                        updateSteps();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
+

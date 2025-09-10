@@ -2,36 +2,405 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Painel de Controle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle - Eventos</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(81, 207, 102, 0.4);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-upcoming {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-ended {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+    </style>
 </head>
-<body>
-    <h1>Painel de Controle - Eventos</h1>
+<body class="min-h-screen">
+    <!-- Header -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-calendar-check text-indigo-600 text-2xl mr-3"></i>
+                    <h1 class="text-xl font-semibold text-gray-800">Painel de Controle</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('relatorio') }}" class="text-gray-600 hover:text-indigo-600 transition-colors duration-200 flex items-center">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Relatórios
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="text-gray-600 hover:text-red-600 transition-colors duration-200 flex items-center">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-    <p><a href="{{ url_for('criar_evento') }}">➕ Criar novo evento</a></p>
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Section -->
+        <div class="mb-8 fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Gestão de Eventos</h2>
+                    <p class="text-gray-600">Gerencie todos os seus eventos em um só lugar</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <a href="{{ url_for('criar_evento') }}" class="btn-primary text-white font-semibold py-3 px-6 rounded-lg inline-flex items-center">
+                        <i class="fas fa-plus mr-2"></i>
+                        Criar Novo Evento
+                    </a>
+                </div>
+            </div>
+        </div>
 
-    <table border="1" cellpadding="5" cellspacing="0">
-        <tr>
-            <th>Nome</th>
-            <th>Data Início</th>
-            <th>Data Fim</th>
-            <th>Local</th>
-            <th>Ações</th>
-        </tr>
-        {% for evento in eventos %}
-        <tr>
-            <td><a href="{{ url_for('relatorio_evento', evento_id=evento.id) }}">{{ evento.nome }}</a></td>
-            <td>{{ evento.data_inicio.strftime('%d/%m/%Y %H:%M') }}</td>
-            <td>{{ evento.data_fim.strftime('%d/%m/%Y %H:%M') }}</td>
-            <td>{{ evento.local }}</td>
-            <td>
-                <form action="{{ url_for('apagar_evento', evento_id=evento.id) }}" method="post" style="display:inline;">
-                    <button type="submit">🗑️ Apagar</button>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-indigo-100 rounded-full">
+                        <i class="fas fa-calendar text-indigo-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total de Eventos</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ eventos|length }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-green-100 rounded-full">
+                        <i class="fas fa-play text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Eventos Ativos</p>
+                        <p class="text-2xl font-bold text-gray-900">
+                            {% set active_count = 0 %}
+                            {% for evento in eventos %}
+                                {% if evento.data_inicio <= agora and evento.data_fim >= agora %}
+                                    {% set active_count = active_count + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ active_count }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-blue-100 rounded-full">
+                        <i class="fas fa-clock text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Próximos Eventos</p>
+                        <p class="text-2xl font-bold text-gray-900">
+                            {% set upcoming_count = 0 %}
+                            {% for evento in eventos %}
+                                {% if evento.data_inicio > agora %}
+                                    {% set upcoming_count = upcoming_count + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ upcoming_count }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events Grid -->
+        {% if eventos %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
+            {% for evento in eventos %}
+            <div class="bg-white rounded-xl shadow-md card-hover overflow-hidden">
+                <!-- Event Header -->
+                <div class="p-6 pb-4">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900 truncate">{{ evento.nome }}</h3>
+                        {% set now = agora %}
+                        {% if evento.data_inicio <= now and evento.data_fim >= now %}
+                            <span class="status-badge status-active">
+                                <i class="fas fa-circle text-xs mr-1"></i>Ativo
+                            </span>
+                        {% elif evento.data_inicio > now %}
+                            <span class="status-badge status-upcoming">
+                                <i class="fas fa-clock text-xs mr-1"></i>Próximo
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-ended">
+                                <i class="fas fa-check text-xs mr-1"></i>Finalizado
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Event Details -->
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-start w-4 mr-2"></i>
+                            <span>{{ evento.data_inicio.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-times w-4 mr-2"></i>
+                            <span>{{ evento.data_fim.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                        {% if evento.local %}
+                        <div class="flex items-center">
+                            <i class="fas fa-map-marker-alt w-4 mr-2"></i>
+                            <span class="truncate">{{ evento.local }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if evento.descricao %}
+                    <p class="text-gray-600 text-sm mt-3 line-clamp-2">{{ evento.descricao }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Event Actions -->
+                <div class="px-6 py-4 bg-gray-50 border-t">
+                    <div class="flex items-center justify-between">
+                        <div class="flex space-x-2">
+                            <a href="{{ url_for('relatorio_evento', evento_id=evento.id) }}" class="btn-success text-white text-sm font-medium py-2 px-4 rounded-lg inline-flex items-center">
+                                <i class="fas fa-eye text-xs mr-1"></i>
+                                Ver
+                            </a>
+                            <button onclick="showEventMenu({{ evento.id }}, '{{ evento.nome }}')" class="btn-primary text-white text-sm font-medium py-2 px-4 rounded-lg inline-flex items-center">
+                                <i class="fas fa-cog text-xs mr-1"></i>
+                                Gerenciar
+                            </button>
+                        </div>
+                        <button onclick="confirmDelete({{ evento.id }}, '{{ evento.nome }}')" class="text-red-500 hover:text-red-700 transition-colors duration-200">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12 fade-in">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-calendar-plus text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Nenhum evento encontrado</h3>
+            <p class="text-gray-600 mb-6">Comece criando seu primeiro evento</p>
+            <a href="{{ url_for('criar_evento') }}" class="btn-primary text-white font-semibold py-3 px-6 rounded-lg inline-flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Criar Primeiro Evento
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Event Management Modal -->
+    <div id="eventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2" id="modalTitle">Gerenciar Evento</h3>
+                <p class="text-gray-600" id="modalEventName"></p>
+            </div>
+            
+            <div class="space-y-3">
+                <button onclick="manageVIPs()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                    <i class="fas fa-crown mr-2"></i>
+                    Gerenciar VIPs
+                </button>
+                
+                <button onclick="manageTickets()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                    <i class="fas fa-ticket-alt mr-2"></i>
+                    Gerenciar Ingressos
+                </button>
+                
+                <button onclick="viewReports()" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    Ver Relatórios
+                </button>
+                
+                <button onclick="accessValidation()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Acessar Validação
+                </button>
+            </div>
+            
+            <div class="mt-6 pt-4 border-t">
+                <button onclick="closeEventModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Confirmar Exclusão</h3>
+                <p class="text-gray-600">Tem certeza que deseja excluir o evento <strong id="deleteEventName"></strong>?</p>
+                <p class="text-red-600 text-sm mt-2">Esta ação não pode ser desfeita.</p>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button onclick="closeDeleteModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                    Cancelar
+                </button>
+                <form id="deleteForm" method="post" class="flex-1">
+                    <button type="submit" class="w-full btn-danger text-white font-medium py-2 px-4 rounded-lg">
+                        Excluir
+                    </button>
                 </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+            </div>
+        </div>
+    </div>
 
-    <p><a href="{{ url_for('logout') }}">Sair</a></p>
+    <script>
+        let currentEventId = null;
+
+        function showEventMenu(eventId, eventName) {
+            currentEventId = eventId;
+            document.getElementById('modalEventName').textContent = eventName;
+            document.getElementById('eventModal').classList.remove('hidden');
+            document.getElementById('eventModal').classList.add('flex');
+        }
+
+        function closeEventModal() {
+            document.getElementById('eventModal').classList.add('hidden');
+            document.getElementById('eventModal').classList.remove('flex');
+        }
+
+        function confirmDelete(eventId, eventName) {
+            document.getElementById('deleteEventName').textContent = eventName;
+            document.getElementById('deleteForm').action = `/evento/apagar/${eventId}`;
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.getElementById('deleteModal').classList.add('flex');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            document.getElementById('deleteModal').classList.remove('flex');
+        }
+
+        // Event management functions (to be implemented based on your backend routes)
+        function manageVIPs() {
+            // Redirect to VIP management page
+            alert('Funcionalidade de gerenciamento de VIPs será implementada');
+            closeEventModal();
+        }
+
+        function manageTickets() {
+            // Redirect to ticket management page
+            alert('Funcionalidade de gerenciamento de ingressos será implementada');
+            closeEventModal();
+        }
+
+        function viewReports() {
+            // Redirect to event reports
+            window.location.href = `/relatorio/evento/${currentEventId}`;
+        }
+
+        function accessValidation() {
+            // Redirect to validation page for this event
+            window.location.href = `/evento/${currentEventId}/validacao`;
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('eventModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEventModal();
+            }
+        });
+
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+    </script>
 </body>
 </html>
+
